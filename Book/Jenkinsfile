@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'bookstore:latest'
         REGISTRY = 'adrielnascimento/bookstore'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
     }
 
     stages {
@@ -15,41 +16,35 @@ pipeline {
 
         stage('Verify Workspace') {
             steps {
-                script {
-                    bat 'ls -la' // Linux/Mac
-                }
+                bat 'dir'  // Corrigido para Windows
             }
         }
 
         stage('Build JAR') {
             steps {
-                bat './mvnw clean package -DskipTests' // Build Maven
+                bat '.\\mvnw.cmd clean package -DskipTests'  // Corrigido para Windows
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build(DOCKER_IMAGE)
-                }
+                bat "docker build -t %REGISTRY%:%DOCKER_IMAGE% ."
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
-                        docker.image(DOCKER_IMAGE).push('latest')
-                    }
-                }
+                bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
+                bat "docker push %REGISTRY%:%DOCKER_IMAGE%"
+                bat 'docker logout'
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
-                    bat 'kubectl apply -f k8s/deployment.yaml'
-                    bat 'kubectl apply -f k8s/service.yaml'
+                withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
+                    bat 'kubectl apply -f deployment.yaml'
+                    bat 'kubectl apply -f service.yaml'
                 }
             }
         }
@@ -63,7 +58,7 @@ pipeline {
             echo 'Pipeline failed. Please check the logs.'
         }
         always {
-            cleanWs() // Limpa o workspace após execução
+            cleanWs()
         }
     }
 }

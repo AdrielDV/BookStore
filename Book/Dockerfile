@@ -1,14 +1,23 @@
-# Use uma imagem base com Java 17
 FROM openjdk:17-jdk-slim
 
-# Defina o diretório de trabalho
+# Criar usuário não-root
+RUN addgroup --system javauser && adduser --system --ingroup javauser javauser
+
 WORKDIR /usr/src/app
 
-# Copie o JAR da aplicação para dentro do container
+# Copiar o JAR
 COPY target/Book-0.0.1-SNAPSHOT.jar app.jar
 
-# Exponha a porta usada pela sua aplicação (por padrão, 8080 em Spring Boot)
+# Definir propriedade do arquivo para o usuário não-root
+RUN chown javauser:javauser app.jar
+
+# Mudar para usuário não-root
+USER javauser
+
 EXPOSE 8080
 
-# Comando para rodar a aplicação
+# Adicionar healthcheck
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget -q --spider http://localhost:8080/actuator/health || exit 1
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
