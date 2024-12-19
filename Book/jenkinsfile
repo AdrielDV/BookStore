@@ -13,6 +13,20 @@ pipeline {
             }
         }
 
+        stage('Verify Workspace') {
+            steps {
+                script {
+                    sh 'ls -la' // Linux/Mac
+                }
+            }
+        }
+
+        stage('Build JAR') {
+            steps {
+                sh './mvnw clean package -DskipTests' // Build Maven
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -33,36 +47,23 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
+                withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl apply -f k8s/deployment.yaml'
+                    sh 'kubectl apply -f k8s/service.yaml'
+                }
             }
         }
     }
-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-stage('Deploy to Kubernetes') {
-    steps {
-        withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
-            sh 'kubectl apply -f k8s/deployment.yaml'
-            sh 'kubectl apply -f k8s/service.yaml'
+    post {
+        success {
+            echo 'Pipeline executed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs.'
+        }
+        always {
+            cleanWs() // Limpa o workspace após execução
         }
     }
 }
