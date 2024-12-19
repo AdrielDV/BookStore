@@ -1,5 +1,5 @@
 # Use uma imagem base com Java 17
-FROM openjdk:17.0.13
+FROM openjdk:17-jdk-slim
 
 # Defina o diretório de trabalho
 WORKDIR /usr/src/app
