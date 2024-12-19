@@ -73,31 +73,31 @@ pipeline {
             }
         }
 
-       stage('Push to Docker Hub') {
-           steps {
-               script {
-                   try {
-                       // Corrigindo a autenticação do Docker Hub
-                       withCredentials([usernamePassword(
-                           credentialsId: 'dockerhub-credentials',
-                           usernameVariable: 'adrielnascimento',
-                           passwordVariable: 'zcfkd.9991@'
-                       )]) {
-                           bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
-
-                           // Push das imagens
-                           bat "docker push adrielnascimento/bookstore:latest"
-                           bat "docker push adrielnascimento/bookstore:${BUILD_NUMBER}"
-                       }
-                   } catch (error) {
-                       echo "Docker push failed: ${error}"
-                       throw error
-                   } finally {
-                       bat 'docker logout'
-                   }
-               }
-           }
-       }
+//        stage('Push to Docker Hub') {
+//            steps {
+//                script {
+//                    try {
+//                        // Corrigindo a autenticação do Docker Hub
+//                        withCredentials([usernamePassword(
+//                            credentialsId: 'dockerhub-credentials',
+//                            usernameVariable: 'adrielnascimento',
+//                            passwordVariable: 'zcfkd.9991@'
+//                        )]) {
+//                            bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+//
+//                            // Push das imagens
+//                            bat "docker push adrielnascimento/bookstore:latest"
+//                            bat "docker push adrielnascimento/bookstore:${BUILD_NUMBER}"
+//                        }
+//                    } catch (error) {
+//                        echo "Docker push failed: ${error}"
+//                        throw error
+//                    } finally {
+//                        bat 'docker logout'
+//                    }
+//                }
+//            }
+//        }
 
         stage('Deploy to Kubernetes') {
             steps {
