@@ -73,27 +73,31 @@ pipeline {
             }
         }
 
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    try {
-                        // Login no Docker Hub
-                        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKERHUB_PSW', usernameVariable: 'DOCKERHUB_USR')]) {
-                            bat 'echo %DOCKERHUB_PSW% | docker login -u %DOCKERHUB_USR% --password-stdin'
-                        }
+       stage('Push to Docker Hub') {
+           steps {
+               script {
+                   try {
+                       // Corrigindo a autenticação do Docker Hub
+                       withCredentials([usernamePassword(
+                           credentialsId: 'dockerhub-credentials',
+                           usernameVariable: 'adrielnascimento',
+                           passwordVariable: 'zcfkd.9991@'
+                       )]) {
+                           bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
 
-                        // Push das imagens
-                        bat "docker push ${REGISTRY}/${IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-                        bat "docker push ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
-                    } catch (error) {
-                        echo "Docker push failed: ${error}"
-                        throw error
-                    } finally {
-                        bat 'docker logout'
-                    }
-                }
-            }
-        }
+                           // Push das imagens
+                           bat "docker push adrielnascimento/bookstore:latest"
+                           bat "docker push adrielnascimento/bookstore:${BUILD_NUMBER}"
+                       }
+                   } catch (error) {
+                       echo "Docker push failed: ${error}"
+                       throw error
+                   } finally {
+                       bat 'docker logout'
+                   }
+               }
+           }
+       }
 
         stage('Deploy to Kubernetes') {
             steps {
