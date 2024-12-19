@@ -16,14 +16,14 @@ pipeline {
         stage('Verify Workspace') {
             steps {
                 script {
-                    sh 'ls -la' // Linux/Mac
+                    bat 'ls -la' // Linux/Mac
                 }
             }
         }
 
         stage('Build JAR') {
             steps {
-                sh './mvnw clean package -DskipTests' // Build Maven
+                bat './mvnw clean package -DskipTests' // Build Maven
             }
         }
 
@@ -48,8 +48,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig-credentials', variable: 'KUBECONFIG')]) {
-                    sh 'kubectl apply -f k8s/deployment.yaml'
-                    sh 'kubectl apply -f k8s/service.yaml'
+                    bat 'kubectl apply -f k8s/deployment.yaml'
+                    bat 'kubectl apply -f k8s/service.yaml'
                 }
             }
         }
