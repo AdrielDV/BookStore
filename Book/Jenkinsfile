@@ -16,19 +16,23 @@ pipeline {
 
         stage('Verify Workspace') {
             steps {
-                bat 'dir'  // Corrigido para Windows
+                bat 'dir'
             }
         }
 
         stage('Build JAR') {
             steps {
-                bat '.\\mvnw.cmd clean package -DskipTests'  // Corrigido para Windows
+                dir('Book') {  // Muda para o diretório Book antes de executar
+                    bat 'mvnw.cmd clean package -DskipTests'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t %REGISTRY%:%DOCKER_IMAGE% ."
+                dir('Book') {  // Muda para o diretório Book para o Dockerfile
+                    bat "docker build -t %REGISTRY%:%DOCKER_IMAGE% ."
+                }
             }
         }
 
@@ -43,8 +47,10 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
-                    bat 'kubectl apply -f deployment.yaml'
-                    bat 'kubectl apply -f service.yaml'
+                    dir('Book') {  // Muda para o diretório Book para os arquivos k8s
+                        bat 'kubectl apply -f deployment.yaml'
+                        bat 'kubectl apply -f service.yaml'
+                    }
                 }
             }
         }
