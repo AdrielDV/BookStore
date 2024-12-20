@@ -131,7 +131,7 @@ pipeline {
                                 bat 'kubectl apply -f service.yaml'
 
                                 // Verificar status do deployment
-                                bat 'kubectl rollout status deployment/bookstore-deployment'
+                                bat 'kubectl rollout status deployment/bookstore-app'
                             }
                         }
                     } catch (error) {
