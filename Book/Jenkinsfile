@@ -84,8 +84,8 @@ pipeline {
                     try {
                         withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
                             dir('Book') {
-                                // Atualizar a imagem no deployment
-                                bat "kubectl set image deployment/bookstore-app bookstore=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                                // Alterado para usar o nome correto do container
+                                bat "kubectl set image deployment/bookstore-app bookstore-app=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
 
                                 // Aplicar configurações
                                 bat 'kubectl apply -f deployment.yaml'
@@ -102,7 +102,6 @@ pipeline {
                 }
             }
         }
-    }
 
     post {
         success {
