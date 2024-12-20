@@ -104,9 +104,9 @@ pipeline {
                        // Corrigindo a autenticação do Docker Hub
                       withCredentials([usernamePassword(credentialsId: 'DOCKER_CREDENTIALS_ID', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                           bat """
-                          docker login -u adrielnascimento -p zcfkd.9991@
+                          docker login -u %adrielnascimento% -p %zcfkd.9991@%
                           docker build -t bookstore:1.0 .
-                          docker push bookstore:1.0
+                          docker push adrielnascimento/bookstore:1.0
                           """
                       }
  {
