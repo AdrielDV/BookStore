@@ -3,19 +3,24 @@ kind: Deployment
 metadata:
   name: bookstore-app
 spec:
-  replicas: 2
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
-      app: bookstore
+      app: bookstore-app  # Padronizando o nome
   template:
     metadata:
       labels:
-        app: bookstore
+        app: bookstore-app  # Padronizando o nome
     spec:
       imagePullSecrets:
         - name: dockerhub-secret
       containers:
-        - name: bookstore
+        - name: bookstore-app  # Padronizando o nome
           image: adrielnascimento/bookstore:1.0
           ports:
             - containerPort: 8080
