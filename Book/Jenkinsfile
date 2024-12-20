@@ -101,8 +101,8 @@ pipeline {
                     }
                 }
             }
-
-
+}
+}
     post {
         success {
             echo "Pipeline completed successfully. Image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
