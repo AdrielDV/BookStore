@@ -6,6 +6,7 @@ pipeline {
         REGISTRY = 'adrielnascimento'
         IMAGE_NAME = 'bookstore'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+
     }
 
     stages {
@@ -98,34 +99,19 @@ pipeline {
 //                }
 //            }
 //        }
-            stage('Push to Docker Hub') {
-           steps {
-               script {
-                   try {
-                       // Corrigindo a autenticação do Docker Hub
-                      withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                          bat """
-                          docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%
-                          docker build -t bookstore .
-                          docker push bookstore
-                          """
-                      }
- {
-                           bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
-
-                           // Push das imagens
-                           bat "docker push adrielnascimento/bookstore:latest"
-                           bat "docker push adrielnascimento/bookstore:${BUILD_NUMBER}"
+             stages {
+                   stage('Build and Push Docker Image') {
+                       steps {
+                           withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                               bat """
+                               docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+                               docker build -t adrielnascimento/bookstore:1.0 .
+                               docker push adrielnascimento/bookstore:1.0
+                               """
+                           }
                        }
-                   } catch (error) {
-                       echo "Docker push failed: ${error}"
-                       throw error
-                   } finally {
-                       bat 'docker logout'
                    }
                }
-           }
-       }
 
 
 
