@@ -6,7 +6,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"  # Se estiver usando AWS
 spec:
   selector:
-    app: bookstore
+    app: bookstore-app
   ports:
     - protocol: TCP
       port: 80
