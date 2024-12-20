@@ -103,7 +103,7 @@ pipeline {
                script {
                    try {
                        // Corrigindo a autenticação do Docker Hub
-                      withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'adrielnascimento', passwordVariable: 'zcfkd.9991@')]) {
+                      withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                           bat """
                           docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%
                           docker build -t bookstore .
