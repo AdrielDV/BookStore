@@ -4,23 +4,16 @@ metadata:
   name: bookstore-app
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   selector:
     matchLabels:
-      app: bookstore-app  # Padronizando o nome
+      app: bookstore-app
   template:
     metadata:
       labels:
-        app: bookstore-app  # Padronizando o nome
+        app: bookstore-app
     spec:
-      imagePullSecrets:
-        - name: dockerhub-secret
       containers:
-        - name: bookstore-app  # Padronizando o nome
+        - name: bookstore-app
           image: adrielnascimento/bookstore:1.0
           ports:
             - containerPort: 8080
@@ -31,15 +24,18 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "500m"
+          # Ajustando as probes para dar mais tempo à aplicação
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90  # Aumentado para dar mais tempo
             periodSeconds: 30
+            timeoutSeconds: 5        # Adicionado timeout
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 45  # Aumentado para dar mais tempo
             periodSeconds: 10
+            timeoutSeconds: 5        # Adicionado timeout
