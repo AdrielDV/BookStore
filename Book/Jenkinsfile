@@ -57,7 +57,7 @@ pipeline {
                                           usernameVariable: 'DOCKER_USERNAME',
                                           passwordVariable: 'DOCKER_PASSWORD')]) {
                                 // Login no Docker Hub
-                                bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
+                                bat "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
 
                                 // Build da imagem
                                 bat "docker build -t ${REGISTRY}/${IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
