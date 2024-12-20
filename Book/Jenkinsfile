@@ -110,7 +110,7 @@ pipeline {
                           """
                       }
  {
-                           bat "docker login -u adrielnascimento -p zcfkd.9991@"
+                           bat "docker login -u %adrielnascimento% -p %zcfkd.9991@%"
 
                            // Push das imagens
                            bat "docker push adrielnascimento/bookstore:latest"
