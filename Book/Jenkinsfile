@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_TAG = 'latest'
+        DOCKER_IMAGE_TAG = '1.0'
         REGISTRY = 'adrielnascimento'
         IMAGE_NAME = 'bookstore'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
