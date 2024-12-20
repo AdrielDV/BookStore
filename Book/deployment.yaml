@@ -12,6 +12,8 @@ spec:
       labels:
         app: bookstore
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
         - name: bookstore
           image: adrielnascimento/bookstore:1.0
