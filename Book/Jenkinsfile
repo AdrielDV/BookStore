@@ -78,31 +78,33 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    try {
-                        withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
-                            dir('Book') {
-                                // Alterado para usar o nome correto do container
-                                bat "kubectl set image deployment/bookstore-app bookstore-app=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+       stage('Deploy to Kubernetes') {
+           steps {
+               script {
+                   try {
+                       withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
+                           dir('Book') {
+                               // Primeiro aplicar o deployment e service
+                               bat 'kubectl apply -f deployment.yaml'
+                               bat 'kubectl apply -f service.yaml'
 
-                                // Aplicar configurações
-                                bat 'kubectl apply -f deployment.yaml'
-                                bat 'kubectl apply -f service.yaml'
+                               // Depois atualizar a imagem
+                               bat "kubectl set image deployment/bookstore-app bookstore-app=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
 
-                                // Verificar status
-                                bat 'kubectl rollout status deployment/bookstore-app'
-                            }
-                        }
-                    } catch (error) {
-                        echo "Kubernetes deployment failed: ${error}"
-                        throw error
-                    }
-                }
-            }
-}
-}
+                               // Verificar status
+                               bat 'kubectl rollout status deployment/bookstore-app'
+
+                               // Opcional: verificar os pods
+                               bat 'kubectl get pods'
+                           }
+                       }
+                   } catch (error) {
+                       echo "Kubernetes deployment failed: ${error}"
+                       throw error
+                   }
+               }
+           }
+       }
     post {
         success {
             echo "Pipeline completed successfully. Image: ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
